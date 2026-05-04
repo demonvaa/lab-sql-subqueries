@@ -26,15 +26,13 @@ WHERE actor_id IN (
 
 -- Sales have been lagging among young families, and you want to target family movies for a promotion. 
 -- Identify all movies categorized as family films.
-SELECT 
-f.title
+SELECT f.title
 FROM film f
-WHERE f.film_id IN (
-	SELECT film_id
-	FROM film_category fc
-	JOIN category c
-		ON fc.category_id = c.category_id
-		WHERE c.name = 'Family');
+JOIN film_category fc 
+    ON f.film_id = fc.film_id
+JOIN category c
+    ON fc.category_id = c.category_id
+WHERE c.name = 'Family';
 
 -- Retrieve the name and email of customers from Canada using both subqueries and joins. 
 -- To use joins, you will need to identify the relevant tables and their primary and foreign keys.
@@ -66,7 +64,7 @@ JOIN city ci
 	ON ci.city_id = ad.city_id
 JOIN country co
 	 ON ci.country_id = co.country_id
-WHERE co.country = "Canada";
+WHERE co.country = 'Canada';
 
 
 
@@ -78,7 +76,7 @@ WHERE co.country = "Canada";
 -- First, you will need to find the most prolific actor and then use that actor_id 
 -- to find the different films that he or she starred in.
 SELECT 
-	f.title
+	DISTINCT f.title
 FROM film f
 JOIN film_actor fa 
 	ON f.film_id = fa.film_id
@@ -96,7 +94,8 @@ WHERE fa.actor_id = (
 -- You can use the customer and payment tables to find the most profitable customer, i.e.,
 --  the customer who has made the largest sum of payments.
 
-SELECT title
+SELECT 
+	DISTINCT title
 FROM film f
 JOIN inventory i
 	ON f.film_id = i.film_id
@@ -120,7 +119,7 @@ WITH totals AS (
     FROM payment
     GROUP BY customer_id
 )
-SELECT *
+SELECT customer_id, total_amount
 FROM totals
 WHERE total_amount > (SELECT AVG(total_amount) FROM totals)
 ORDER BY total_amount DESC	
